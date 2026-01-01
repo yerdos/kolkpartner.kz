@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
-import { Car, Globe, Package, Settings, Heart, LogIn, LogOut, User as UserIcon, Store } from 'lucide-react';
+import { Car, Globe, Package, Settings, Heart, LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { VehicleCard } from './components/VehicleCard';
 import { VehicleFilters, type FilterState } from './components/VehicleFilters';
 import { VehicleDetails } from './components/VehicleDetails';
@@ -9,12 +9,11 @@ import { OrderTracking } from './components/OrderTracking';
 import { AdminPanel } from './components/AdminPanel';
 import { AuthModal } from './components/AuthModal';
 import { FavoritesView } from './components/FavoritesView';
-import { DistributorCenter } from './components/DistributorCenter';
 import { supabase, type Vehicle, type CostBreakdown } from './lib/supabase';
 import { useTranslation, type Language } from './lib/i18n';
 import { useAuth } from './contexts/AuthContext';
 
-type View = 'vehicles' | 'orders' | 'admin' | 'favorites' | 'distributor';
+type View = 'vehicles' | 'orders' | 'admin' | 'favorites';
 
 
 function AppContent() {
@@ -30,7 +29,6 @@ function AppContent() {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
-  const [isDistributor, setIsDistributor] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<FilterState>({
@@ -49,7 +47,6 @@ function AppContent() {
     if (location.pathname.startsWith('/admin')) return 'admin';
     if (location.pathname.startsWith('/order')) return 'orders';
     if (location.pathname.startsWith('/favorites')) return 'favorites';
-    if (location.pathname.startsWith('/distributor')) return 'distributor';
     return 'vehicles';
   })();
 
@@ -66,7 +63,6 @@ function AppContent() {
       setFavorites(new Set());
       setUserRole(null);
       setUserName(null);
-      setIsDistributor(false);
     }
   }, [user]);
 
@@ -75,13 +71,12 @@ function AppContent() {
     try {
       const { data } = await supabase
         .from('user_profiles')
-        .select('role, name, distributor_id')
+        .select('role, name')
         .eq('user_id', user.id)
         .maybeSingle();
       if (data) {
         setUserRole(data.role);
         setUserName(data.name);
-        setIsDistributor(!!data.distributor_id);
       }
     } catch (error) {
       console.error('Error loading user role:', error);
@@ -361,20 +356,6 @@ function AppContent() {
                 <span className="hidden md:inline">{t('myOrders')}</span>
               </button>
 
-              {isDistributor && (
-                <button
-                  onClick={() => navigate('/distributor')}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold text-xs transition-colors ${
-                    currentView === 'distributor'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  <Store className="w-3.5 h-3.5" />
-                  <span className="hidden md:inline">分销中心</span>
-                </button>
-              )}
-
               {userRole === 'admin' && (
                 <button
                   onClick={() => navigate('/admin')}
@@ -560,10 +541,6 @@ function AppContent() {
               onSelectVehicle={handleSelectVehicle}
               onToggleFavorite={handleToggleFavorite}
             />
-          } />
-
-          <Route path="/distributor" element={
-            <DistributorCenter />
           } />
 
           <Route path="/admin" element={
