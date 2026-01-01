@@ -10,8 +10,9 @@ import TaxCalculatorConfig from './admin/TaxCalculatorConfig';
 import VehicleCostCalculation from './admin/VehicleCostCalculation';
 import DistributorManagement from './admin/DistributorManagement';
 import CustomerLeadsManagement from './admin/CustomerLeadsManagement';
+import VehicleCostQuery from './admin/VehicleCostQuery';
 
-type Tab = 'vehicles' | 'orders' | 'tracking' | 'costs' | 'inspections' | 'users' | 'tax-config' | 'vehicle-costs' | 'distributors' | 'customer-leads';
+type Tab = 'vehicles' | 'orders' | 'tracking' | 'costs' | 'inspections' | 'users' | 'tax-config' | 'vehicle-costs' | 'distributors' | 'customer-leads' | 'cost-query';
 
 interface AdminPanelProps {
   onBack: () => void;
@@ -27,6 +28,7 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
     { id: 'customer-leads' as const, label: '客户线索', icon: '👤' },
     { id: 'tracking' as const, label: '物流追踪', icon: '📍' },
     { id: 'costs' as const, label: '价格管理', icon: '💰' },
+    { id: 'cost-query' as const, label: '成本查询', icon: '🔍' },
     { id: 'inspections' as const, label: '检测报告', icon: '📋' },
     { id: 'users' as const, label: '用户管理', icon: '👥' },
     { id: 'tax-config' as const, label: '税费配置', icon: '⚙️' },
@@ -76,6 +78,7 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
         {activeTab === 'customer-leads' && <CustomerLeadsManagement />}
         {activeTab === 'tracking' && <TrackingManagement />}
         {activeTab === 'costs' && <CostManagement />}
+        {activeTab === 'cost-query' && <VehicleCostQuery />}
         {activeTab === 'inspections' && <InspectionManagement />}
         {activeTab === 'users' && <UserManagement />}
         {activeTab === 'tax-config' && <TaxCalculatorConfig />}
